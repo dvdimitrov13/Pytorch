@@ -140,7 +140,16 @@ class ModelTrainer:
                     running_corrects += torch.sum(preds == labels.data)
 
                 epoch_loss = running_loss / len(dataloader.dataset)
-                epoch_acc = running_corrects.double() / len(dataloader.dataset)
+                
+                # Calculation adjusted for architecture
+                if self.device == "cuda" or self.device == "cpu":
+                    epoch_acc = running_corrects.double() / len(dataloader.dataset)
+                elif self.device == "mps":  # Assuming Metal (MPS) backend
+                    epoch_acc = running_corrects.float() / len(dataloader.dataset)
+                else:  # For TPU or any other backend
+                    epoch_acc = running_corrects.to(torch.float64) / len(
+                        dataloader.dataset
+                    )
 
                 if verbose:
                     print(f"\n{phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}")
