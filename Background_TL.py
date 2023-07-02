@@ -1,7 +1,7 @@
 import os
 
 # Set the GPU device index you want to use
-os.environ['CUDA_VISIBLE_DEVICES'] = '1'  # Use the second GPU
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'  # Use the second GPU
 
 import torch.nn as nn
 from torchvision.models.resnet import ResNet50_Weights, resnet50
@@ -37,32 +37,33 @@ def init_model(parameters):
     return model
 
 
-folder = "./data/background_data/background_data"
-csv_file = "./data/background_data/background_data.csv"
+if __name__ == '__main__':
+    folder = "./data/background_data/background_data"
+    csv_file = "./data/background_data/background_data.csv"
 
-parametrization = [
-    {"name": "lr", "type": "range", "bounds": [1e-4, 1e-1], "log_scale": True},
-    # {"name": "batchsize", "type": "choice", "values": [32, 64, 96]},
-    # {"name": "stepsize", "type": "choice", "values": [5, 10]},
-    # {"name": "Hs", "type": "choice", "values": [256, 512, 1024]},
-    {"name": "dropout", "type": "range", "bounds": [0.2, 0.4]},
-    # {"name": "p_horizontal_flip", "type": "range", "bounds": [0.2, 0.8]},
-    # {"name": "p_rotate", "type": "range", "bounds": [0.2, 0.8]},
-    # {"name": "p_random_brightness_contrast", "type": "range", "bounds": [0.2, 0.8]},
-    # {"name": "p_hue_saturation_value", "type": "range", "bounds": [0.2, 0.8]},
-    # {"name": "p_gaussian_blur", "type": "range", "bounds": [0.1, 0.5]},
-    # {"name": "p_gauss_noise", "type": "range", "bounds": [0.1, 0.5]},
-    # {"name": "p_coarse_dropout", "type": "choice", "values": [0.0, 0.5]},
-    {"name": "num_epochs", "type": "choice", "values": [1]},
-]
+    parametrization = [
+        {"name": "lr", "type": "range", "bounds": [1e-4, 1e-1], "log_scale": True},
+        # {"name": "batchsize", "type": "choice", "values": [32, 64, 96]},
+        # {"name": "stepsize", "type": "choice", "values": [5, 10]},
+        # {"name": "Hs", "type": "choice", "values": [256, 512, 1024]},
+        {"name": "dropout", "type": "range", "bounds": [0.2, 0.4]},
+        # {"name": "p_horizontal_flip", "type": "range", "bounds": [0.2, 0.8]},
+        # {"name": "p_rotate", "type": "range", "bounds": [0.2, 0.8]},
+        # {"name": "p_random_brightness_contrast", "type": "range", "bounds": [0.2, 0.8]},
+        # {"name": "p_hue_saturation_value", "type": "range", "bounds": [0.2, 0.8]},
+        # {"name": "p_gaussian_blur", "type": "range", "bounds": [0.1, 0.5]},
+        # {"name": "p_gauss_noise", "type": "range", "bounds": [0.1, 0.5]},
+        # {"name": "p_coarse_dropout", "type": "choice", "values": [0.0, 0.5]},
+        {"name": "num_epochs", "type": "choice", "values": [1]},
+    ]
 
-trainer = ModelTrainer(init_model)
-# This returns accuracy and best model params but also sets the model to the best model
-acc, best_params = trainer.optimize(parametrization=parametrization, folder=folder, csv_file=csv_file, num_trials = 10)
-trainer.history()
-trainer.eval(
-    val_loader=trainer.val_loader, label_mapping=trainer.label_mapping, plot=True
-)
-trainer.save('models/background.pt')
+    trainer = ModelTrainer(init_model)
+    # This returns accuracy and best model params but also sets the model to the best model
+    acc, best_params = trainer.optimize(parametrization=parametrization, folder=folder, csv_file=csv_file, num_trials = 10)
+    trainer.history()
+    trainer.eval(
+        val_loader=trainer.val_loader, label_mapping=trainer.label_mapping, plot=True
+    )
+    trainer.save('models/background.pt')
 
-## TODO: Add a folder structure to the optmizer as well as a resume variable
+    ## TODO: Add a folder structure to the optmizer as well as a resume variable
